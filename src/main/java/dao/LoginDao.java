@@ -1,6 +1,12 @@
 package dao;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
 import model.Login;
+import model.SalesReport;
 
 public class LoginDao {
 	/*
@@ -20,10 +26,20 @@ public class LoginDao {
 		
 		/*Sample data begins*/
 		Login login = new Login();
-//		login.setRole("customerRepresentative");
-//		login.setRole("manager");
-		login.setRole("customer");
-		return login;
+		try {
+			Class.forName("com.mysql.jdbc.Driver" );
+			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/demo","root","root");
+			Statement st = con.createStatement();
+			ResultSet rs = st.executeQuery("select *"
+					+ "from Login where username =" + username + "and password = " + password);
+			login.setPassword(rs.getString("password"));
+			login.setUsername(rs.getString("username"));
+			login.setRole(rs.getString("role"));
+		} catch(Exception e) {
+			System.out.println(e);
+		}
+		
+		return login; 
 		/*Sample data ends*/
 		
 	}
@@ -39,6 +55,19 @@ public class LoginDao {
 		 */
 		
 		/*Sample data begins*/
+		try {
+			Class.forName("com.mysql.jdbc.Driver" );
+			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/demo","root","root");
+			Statement st = con.createStatement();
+			String username = login.getPassword();
+			String password = login.getUsername();
+			String role = login.getRole();
+			String sql = "INSERT INTO Login " + "VALUES(" + username + ", " + password + ", " + role +")";
+			st.execute(sql);
+		} catch(Exception e) {
+			System.out.println(e);
+			return "failure";
+		}
 		return "success";
 		/*Sample data ends*/
 	}
