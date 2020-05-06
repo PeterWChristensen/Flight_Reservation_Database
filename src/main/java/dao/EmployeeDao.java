@@ -1,5 +1,9 @@
 package dao;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +24,29 @@ public class EmployeeDao {
 		 * The sample code returns "success" by default.
 		 * You need to handle the database insertion of the employee details and return "success" or "failure" based on result of the database insertion.
 		 */
-		
+		try {
+		Class.forName("com.mysql.jdbc.Driver");
+		Connection con = DriverManager.getConnection("jdbc:mysql://mysql4.cs.stonybrook.edu:3306/rzinoviev", "rzinoviev", "111595936");
+		Statement st = con.createStatement();
+		ResultSet rs = st.executeQuery("SELECT MAX(Id) FROM Person");
+		Integer id = rs.getInt("Id") + 1;
+		st.executeQuery("INSERT INTO Person VALUES(" + id + ", " +
+				employee.getFirstName() + ", " +
+				employee.getLastName() + ", " +
+				employee.getAddress() + ", " +
+				employee.getCity() + ", " +
+				employee.getState() + ", " +
+				employee.getZipCode() + ", " + ")");
+		st.executeQuery("INSERT INTO Employee VALUES(" + id + ", " +
+				employee.getSSN() + ", " +
+				employee.getIsManager() + ", " +
+				"CURRENT_DATE, " +
+				employee.getHourlyRate() + ")");
+		} catch(Exception e) {
+			System.out.println(e);
+			return "failure";
+		}
+
 		/*Sample data begins*/
 		return "success";
 		/*Sample data ends*/
@@ -35,7 +61,17 @@ public class EmployeeDao {
 		 * The sample code returns "success" by default.
 		 * You need to handle the database update and return "success" or "failure" based on result of the database update.
 		 */
-		
+		try {
+		Class.forName("com.mysql.jdbc.Driver");
+		Connection con = DriverManager.getConnection("jdbc:mysql://mysql4.cs.stonybrook.edu:3306/rzinoviev", "rzinoviev", "111595936");
+		Statement st = con.createStatement();
+		st.executeQuery("UPDATE Employee SET SSN=" + employee.getSSN() + ", " +
+				"IsManager=" + employee.getIsManager() + ", " +
+				"HourlyRate=" + employee.getHourlyRate() + ")");
+		} catch(Exception e) {
+			System.out.println(e);
+			return "failure";
+		}
 		/*Sample data begins*/
 		return "success";
 		/*Sample data ends*/
@@ -48,7 +84,15 @@ public class EmployeeDao {
 		 * The sample code returns "success" by default.
 		 * You need to handle the database deletion and return "success" or "failure" based on result of the database deletion.
 		 */
-		
+		try {
+		Class.forName("com.mysql.jdbc.Driver");
+		Connection con = DriverManager.getConnection("jdbc:mysql://mysql4.cs.stonybrook.edu:3306/rzinoviev", "rzinoviev", "111595936");
+		Statement st = con.createStatement();
+		st.executeQuery("DELETE FROM Employee WHERE SSN=" + SSN + ")");
+		} catch(Exception e) {
+			System.out.println(e);
+			return "failure";
+		}
 		/*Sample data begins*/
 		return "success";
 		/*Sample data ends*/
@@ -63,27 +107,32 @@ public class EmployeeDao {
 		 * Query to return details about all the employees must be implemented
 		 * Each record is required to be encapsulated as a "Employee" class object and added to the "employees" List
 		 */
-
 		List<Employee> employees = new ArrayList<Employee>();
 		
-		/*Sample data begins*/
-		for (int i = 0; i < 10; i++) {
+		try {
+		Class.forName("com.mysql.jdbc.Driver");
+		Connection con = DriverManager.getConnection("jdbc:mysql://mysql4.cs.stonybrook.edu:3306/rzinoviev", "rzinoviev", "111595936");
+		Statement st = con.createStatement();
+		ResultSet rs = st.executeQuery("SELECT * FROM Employee E, Person P WHERE E.Id=P.Id");
+		while(rs.next()){
 			Employee employee = new Employee();
-			employee.setEmail("shiyong@cs.sunysb.edu");
-			employee.setFirstName("Shiyong");
-			employee.setLastName("Lu");
-			employee.setAddress("123 Success Street");
-			employee.setCity("Stony Brook");
-			employee.setStartDate("2006-10-17");
-			employee.setState("NY");
-			employee.setZipCode(11790);
-			employee.setSSN("6314135555");
-			employee.setHourlyRate(100);
-			employee.setIsManager(true);
+			employee.setFirstName(rs.getString("FirstName"));
+			employee.setLastName(rs.getString("LastName"));
+			employee.setAddress(rs.getString("Address"));
+			employee.setCity(rs.getString("City"));
+			employee.setStartDate(rs.getDate("StartDate").toString());
+			employee.setState(rs.getString("State"));
+			employee.setZipCode(rs.getInt("ZipCode"));
+			employee.setSSN(rs.getString("SSN"));
+			employee.setHourlyRate(rs.getInt("HourlyRate"));
+			employee.setIsManager(rs.getBoolean("IsManager"));
+			employee.setEmail(rs.getString("Email"));
 			
 			employees.add(employee);
 		}
-		/*Sample data ends*/
+		} catch(Exception e) {
+			System.out.println(e);
+		}
 		
 		return employees;
 	}
@@ -98,19 +147,25 @@ public class EmployeeDao {
 
 		Employee employee = new Employee();
 		
-		/*Sample data begins*/
-		employee.setEmail("shiyong@cs.sunysb.edu");
-		employee.setFirstName("Shiyong");
-		employee.setLastName("Lu");
-		employee.setAddress("123 Success Street");
-		employee.setCity("Stony Brook");
-		employee.setStartDate("2006-10-17");
-		employee.setState("NY");
-		employee.setZipCode(11790);
-		employee.setSSN("6314135555");
-		employee.setHourlyRate(100);
-		employee.setIsManager(true);
-		/*Sample data ends*/
+		try {
+		Class.forName("com.mysql.jdbc.Driver");
+		Connection con = DriverManager.getConnection("jdbc:mysql://mysql4.cs.stonybrook.edu:3306/rzinoviev", "rzinoviev", "111595936");
+		Statement st = con.createStatement();
+		ResultSet rs = st.executeQuery("SELECT * FROM Employee E, Person P WHERE E.Id=P.Id AND E.SSN=" + SSN);
+			employee.setFirstName(rs.getString("FirstName"));
+			employee.setLastName(rs.getString("LastName"));
+			employee.setAddress(rs.getString("Address"));
+			employee.setCity(rs.getString("City"));
+			employee.setStartDate(rs.getDate("StartDate").toString());
+			employee.setState(rs.getString("State"));
+			employee.setZipCode(rs.getInt("ZipCode"));
+			employee.setSSN(rs.getString("SSN"));
+			employee.setHourlyRate(rs.getInt("HourlyRate"));
+			employee.setIsManager(rs.getBoolean("IsManager"));
+			employee.setEmail(rs.getString("Email"));
+		} catch(Exception e) {
+			System.out.println(e);
+		}
 		
 		return employee;
 	}
@@ -124,10 +179,27 @@ public class EmployeeDao {
 		
 		Employee employee = new Employee();
 		
-		/*Sample data begins*/
-		// EmployeeID = SSN
-		employee.setSSN("6314135555");
-		/*Sample data ends*/
+		try {
+		Class.forName("com.mysql.jdbc.Driver");
+		Connection con = DriverManager.getConnection("jdbc:mysql://mysql4.cs.stonybrook.edu:3306/rzinoviev", "rzinoviev", "111595936");
+		Statement st = con.createStatement();
+		ResultSet rs = st.executeQuery("SELECT MAX(HourlyRate) FROM Employee");
+		int hourlyrate = rs.getInt("HourlyRate");
+		rs = st.executeQuery("SELECT * FROM Employee E, Person P WHERE E.Id=P.Id AND E.HourlyRate=" + hourlyrate);
+			employee.setFirstName(rs.getString("FirstName"));
+			employee.setLastName(rs.getString("LastName"));
+			employee.setAddress(rs.getString("Address"));
+			employee.setCity(rs.getString("City"));
+			employee.setStartDate(rs.getDate("StartDate").toString());
+			employee.setState(rs.getString("State"));
+			employee.setZipCode(rs.getInt("ZipCode"));
+			employee.setSSN(rs.getString("SSN"));
+			employee.setHourlyRate(rs.getInt("HourlyRate"));
+			employee.setIsManager(rs.getBoolean("IsManager"));
+			employee.setEmail(rs.getString("Email"));
+		} catch(Exception e) {
+			System.out.println(e);
+		}
 		
 		return employee;
 	}
@@ -138,8 +210,18 @@ public class EmployeeDao {
 		 * username, which is the Employee's email address who's Employee ID has to be fetched, is given as method parameter
 		 * The Employee ID(SSN) is required to be returned as a String
 		 */
+		String id = "";
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://mysql4.cs.stonybrook.edu:3306/rzinoviev", "rzinoviev", "111595936");
+			Statement st = con.createStatement();
+			ResultSet rs = st.executeQuery("SELECT E.SSN FROM Employee E, Person P WHERE E.Id=P.Id AND P.Email=" + username);
+			id = String.valueOf(rs.getInt("SSN"));
+			} catch(Exception e) {
+				System.out.println(e);
+			}
 
-		return "111111111";
+		return id;
 	}
 
 }
