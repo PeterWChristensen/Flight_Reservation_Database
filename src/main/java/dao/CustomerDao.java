@@ -16,7 +16,7 @@ public class CustomerDao {
 	 * @param String searchKeyword
 	 * @return ArrayList<Customer> object
 	 */
-	public List<Customer> getCustomers() {
+	public List<Customer> getCustomers(String searchKeyword) {
 		/*
 		 * This method fetches one or more customers and returns it as an ArrayList
 		 */
@@ -45,6 +45,30 @@ public class CustomerDao {
 			customers.add(customer);			
 		}
 		/*Sample data ends*/
+		
+//		try {
+//			Class.forName("com.mysql.jdbc.Driver");
+//			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/demo", "root", "root");
+//			Statement st = con.createStatement();
+//			ResultSet rs = st.executeQuery("select * from customer where FirstName like \'%" + searchKeyword + "%\'"
+//					+ "or lastName like \'%" + searchKeyword + "%\'");
+//			while(rs.next()) {
+//				Customer customer = new Customer();
+//				customer.setAccountNo(rs.getInt("CustomerId"));
+//				customer.setAddress(rs.getString("address"));
+//				customer.setLastName(rs.getString("LastName"));
+//				customer.setFirstName(rs.getString("FirstName"));
+//				customer.setCity(rs.getString("City"));
+//				customer.setState(rs.getString("State"));
+//				customer.setEmail(rs.getString("Email"));
+//				customer.setZipCode(rs.getInt("ZipCode"));
+//				customer.setCreditCard(rs.getString("address"));
+//				customer.setRating(rs.getInt("Rating"));
+//				customers.add(customer);	
+//			}
+//		}catch (Exception e) {
+//			System.out.println(e);
+//		}
 		
 		return customers;
 	}
