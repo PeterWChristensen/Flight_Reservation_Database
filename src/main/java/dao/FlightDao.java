@@ -149,7 +149,7 @@ public class FlightDao {
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/demo", "root", "root");
 			Statement st = con.createStatement();
-			ResultSet rs = st.executeQuery();
+			ResultSet rs = st.executeQuery("SELECT * FROM Flight F WHERE NOT EXISTS ( SELECT * FROM Leg L WHERE F.AirlineID = L.AirlineID AND F.FlightNo = L.FlightNo AND (ActualArrTime > ArrTime OR ActualDepTime > DepTime))");
 			while(rs.next()) {
 				Flight flight = new Flight();
 				flight.setAirlineID(rs.getString("AirlineID"));
@@ -188,7 +188,7 @@ public class FlightDao {
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/demo", "root", "root");
 			Statement st = con.createStatement();
-			ResultSet rs = st.executeQuery();
+			ResultSet rs = st.executeQuery("SELECT * FROM Flight F WHERE EXISTS ( SELECT * FROM Leg L WHERE F.AirlineID = L.AirlineID AND F.FlightNo = L.FlightNo AND (ActualArrTime > ArrTime OR ActualDepTime > DepTime))");
 			while(rs.next()) {
 				Flight flight = new Flight();
 				flight.setAirlineID(rs.getString("AirlineID"));
