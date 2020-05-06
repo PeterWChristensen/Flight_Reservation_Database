@@ -189,7 +189,16 @@ public class CustomerDao {
 		 * The students code to delete the data from the database will be written here
 		 * accountNo, which is the Customer's accountNo who's details have to be deleted, is given as method parameter
 		 */
-
+		try {
+		Class.forName("com.mysql.jdbc.Driver");
+		Connection con = DriverManager.getConnection("jdbc:mysql://mysql4.cs.stonybrook.edu:3306/rzinoviev", "rzinoviev", "111595936");
+		Statement st = con.createStatement();
+		st.executeQuery("DELETE FROM Customer WHERE AccountNo=" + accountNo + ")");
+		} catch(Exception e) {
+			System.out.println(e);
+			return "failure";
+		}
+		
 		/*Sample data begins*/
 		return "success";
 		/*Sample data ends*/
