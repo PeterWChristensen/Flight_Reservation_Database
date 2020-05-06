@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.Auctions;
 import model.Customer;
 
 
@@ -29,20 +30,36 @@ public class CustomerDao {
 		 */
 		
 		/*Sample data begins*/
-		for (int i = 0; i < 10; i++) {
-			Customer customer = new Customer();
-			customer.setAccountNo(111);
-			customer.setAddress("123 Success Street");
-			customer.setLastName("Lu");
-			customer.setFirstName("Shiyong");
-			customer.setCity("Stony Brook");
-			customer.setState("NY");
-			customer.setEmail("shiyong@cs.sunysb.edu");
-			customer.setZipCode(11790);
-//			customer.setTelephone("5166328959");
-			customer.setCreditCard("1234567812345678");
-			customer.setRating(1);
-			customers.add(customer);			
+		String query = "SELECT * FROM Customer";
+		String query2 = "SELECT * FROM Person WHERE Id = ?";
+		
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://mysql4.cs.stonybrook.edu:3306/pwchristense", "pwchristense", "112123806");
+			Statement st = con.createStatement();
+			ResultSet rs = st.executeQuery(query);
+			while(rs.next()) {
+				PreparedStatement ps = con.prepareStatement(query2);
+				ps.setInt(1, rs.getInt("Id"));
+				ResultSet result = ps.executeQuery();
+				result.next();
+				Customer customer = new Customer();
+				customer.setAccountNo(rs.getInt("AccountNo"));
+				customer.setAddress(result.getString("Address"));
+				customer.setLastName(result.getString("LastName"));
+				customer.setFirstName(result.getString("FirstName"));
+				customer.setCity(result.getString("City"));
+				customer.setState(result.getString("State"));
+				customer.setEmail(rs.getString("Email"));
+				customer.setZipCode(result.getInt("ZipCode"));
+//				customer.setTelephone("5166328959");
+				customer.setCreditCard(rs.getString("CreditCardNo"));
+				customer.setRating(rs.getInt("Rating"));
+				customers.add(customer);			
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e);
 		}
 		/*Sample data ends*/
 		
@@ -61,10 +78,25 @@ public class CustomerDao {
 		/*Sample data begins*/
 		
 		Customer customer = new Customer();
-		// Customer ID = Account Number
-		customer.setAccountNo(111);
-		customer.setLastName("Lu");
-		customer.setFirstName("Shiyong");
+		
+		String query = "CREATE VIEW CustomerRevenue(AccountNo, TotalRevenue) AS SELECT AccountNo, SUM(TotalFare * 0.1) FROM Reservation GROUP BY AccountNo";
+		String query2 = "SELECT CR.AccountNo, P.FirstName, P.LastName FROM CustomerRevenue CR, Customer C, Person P WHERE CR.AccountNo = C.AccountNo AND C.Id = P.Id AND CR.TotalRevenue >= (SELECT MAX(TotalRevenue) FROM CustomerRevenue)";
+		
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://mysql4.cs.stonybrook.edu:3306/pwchristense", "pwchristense", "112123806");
+			Statement st = con.createStatement();
+			int rows = st.executeUpdate(query);
+			
+			ResultSet rs = st.executeQuery(query2);
+			rs.next();
+			customer.setAccountNo(rs.getInt("AccountNo"));
+			customer.setLastName(rs.getString("LastName"));
+			customer.setFirstName(rs.getString("FirstName"));
+		}
+		catch(Exception e) {
+			System.out.println(e);
+		}
 		/*Sample data ends*/
 	
 		return customer;
@@ -83,16 +115,29 @@ public class CustomerDao {
 		List<Customer> customers = new ArrayList<Customer>();
 		
 		/*Sample data begins*/
-		for (int i = 0; i < 10; i++) {
-			Customer customer = new Customer();
-			customer.setAddress("123 Success Street");
-			customer.setLastName("Lu");
-			customer.setFirstName("Shiyong");
-			customer.setCity("Stony Brook");
-			customer.setState("NY");
-			customer.setEmail("shiyong@cs.sunysb.edu");
-			customer.setZipCode(11790);
-			customers.add(customer);			
+		
+		String query = "SELECT P.FirstName, P.LastName, C.Email, P.Address, P.City, P.State, P.ZipCode FROM Customer C, Person P WHERE C.Id = P.Id";
+		
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://mysql4.cs.stonybrook.edu:3306/pwchristense", "pwchristense", "112123806");
+			Statement st = con.createStatement();			
+			ResultSet rs = st.executeQuery(query);
+			while(rs.next()) {
+				Customer customer = new Customer();
+				customer.setAddress(rs.getString("Address"));
+				customer.setLastName(rs.getString("LastName"));
+				customer.setFirstName(rs.getString("FirstName"));
+				customer.setCity(rs.getString("City"));
+				customer.setState(rs.getString("State"));
+				customer.setEmail(rs.getString("Email"));
+				customer.setZipCode(rs.getInt("ZipCode"));
+				customers.add(customer);			
+			}
+		
+		}
+		catch(Exception e) {
+			System.out.println(e);
 		}
 		/*Sample data ends*/
 		
@@ -108,18 +153,30 @@ public class CustomerDao {
 		 * The customer record is required to be encapsulated as a "Customer" class object
 		 */
 		
-		/*Sample data begins*/
+		/*Sample data begins*/		
+		String query = "SELECT * FROM Customer WHERE AccountNo = ?";
 		Customer customer = new Customer();
-		customer.setAccountNo(111);
-		customer.setAddress("123 Success Street");
-		customer.setLastName("Lu");
-		customer.setFirstName("Shiyong");
-		customer.setCity("Stony Brook");
-		customer.setState("NY");
-		customer.setEmail("shiyong@cs.sunysb.edu");
-		customer.setZipCode(11790);
-		customer.setCreditCard("1234567812345678");
-		customer.setRating(1);
+		
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://mysql4.cs.stonybrook.edu:3306/pwchristense", "pwchristense", "112123806");
+			PreparedStatement st = con.prepareStatement(query);	
+			st.setInt(1, accountNo);
+			ResultSet rs = st.executeQuery();
+			customer.setAccountNo(rs.getInt("AccountNo"));
+			customer.setAddress(rs.getString("Address"));
+			customer.setLastName(rs.getString("LastName"));
+			customer.setFirstName(rs.getString("FirstName"));
+			customer.setCity(rs.getString("City"));
+			customer.setState(rs.getString("State"));
+			customer.setEmail(rs.getString("Email"));
+			customer.setZipCode(rs.getInt("ZipCode"));
+			customer.setCreditCard(rs.getString("CreditCardNo"));
+			customer.setRating(rs.getInt("Rating"));
+		}
+		catch(Exception e) {
+			System.out.println(e);
+		}
 		/*Sample data ends*/
 		
 		return customer;
@@ -171,32 +228,34 @@ public class CustomerDao {
 		 * The sample code returns "success" by default.
 		 * You need to handle the database insertion of the customer details and return "success" or "failure" based on result of the database insertion.
 		 */
-		try {
-		Class.forName("com.mysql.jdbc.Driver");
-		Connection con = DriverManager.getConnection("jdbc:mysql://mysql4.cs.stonybrook.edu:3306/rzinoviev", "rzinoviev", "111595936");
-		Statement st = con.createStatement();
-		ResultSet rs = st.executeQuery("SELECT MAX(Id) FROM Person");
-		Integer id = rs.getInt("Id") + 1;
-		st.executeQuery("INSERT INTO Person VALUES(" + id + ", " +
-				customer.getFirstName() + ", " +
-				customer.getLastName() + ", " +
-				customer.getAddress() + ", " +
-				customer.getCity() + ", " +
-				customer.getState() + ", " +
-				customer.getZipCode() + ", " + ")");
-		st.executeQuery("INSERT INTO Customer VALUES(" + id + ", " +
-				customer.getAccountNo() + ", " +
-				customer.getCreditCard() + ", " +
-				customer.getEmail() + ", " +
-				"CURRENT_TIMESTAMP, " +
-				customer.getRating() + ")");
-		} catch(Exception e) {
-			System.out.println(e);
-			return "failure";
-		}
-
+		
 		/*Sample data begins*/
-		return "success";
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://mysql4.cs.stonybrook.edu:3306/rzinoviev", "rzinoviev", "111595936");
+			Statement st = con.createStatement();
+			ResultSet rs = st.executeQuery("SELECT MAX(Id) FROM Person");
+			Integer id = rs.getInt("Id") + 1;
+			st.executeQuery("INSERT INTO Person VALUES(" + id + ", " +
+					customer.getFirstName() + ", " +
+					customer.getLastName() + ", " +
+					customer.getAddress() + ", " +
+					customer.getCity() + ", " +
+					customer.getState() + ", " +
+					customer.getZipCode() + ", " + ")");
+			st.executeQuery("INSERT INTO Customer VALUES(" + id + ", " +
+					customer.getAccountNo() + ", " +
+					customer.getCreditCard() + ", " +
+					customer.getEmail() + ", " +
+					"CURRENT_TIMESTAMP, " +
+					customer.getRating() + ")");
+			} catch(Exception e) {
+				System.out.println(e);
+				return "failure";
+			}
+
+			/*Sample data begins*/
+			return "success";
 		/*Sample data ends*/
 
 	}
@@ -209,19 +268,21 @@ public class CustomerDao {
 		 * The sample code returns "success" by default.
 		 * You need to handle the database update and return "success" or "failure" based on result of the database update.
 		 */
-		try {
-		Class.forName("com.mysql.jdbc.Driver");
-		Connection con = DriverManager.getConnection("jdbc:mysql://mysql4.cs.stonybrook.edu:3306/rzinoviev", "rzinoviev", "111595936");
-		Statement st = con.createStatement();
-		st.executeQuery("UPDATE Customer SET CreditCardNo=" + customer.getCreditCard() + ", " +
-				"Email=" + customer.getEmail() + ", " +
-				"Rating=" + customer.getRating() + ")");
-		} catch(Exception e) {
-			System.out.println(e);
-			return "failure";
-		}
+		
 		/*Sample data begins*/
-		return "success";
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://mysql4.cs.stonybrook.edu:3306/rzinoviev", "rzinoviev", "111595936");
+			Statement st = con.createStatement();
+			st.executeQuery("UPDATE Customer SET CreditCardNo=" + customer.getCreditCard() + ", " +
+					"Email=" + customer.getEmail() + ", " +
+					"Rating=" + customer.getRating() + ")");
+			} catch(Exception e) {
+				System.out.println(e);
+				return "failure";
+			}
+			/*Sample data begins*/
+			return "success";
 		/*Sample data ends*/
 
 	}
