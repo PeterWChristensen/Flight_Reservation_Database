@@ -1,6 +1,5 @@
 package dao;
 
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -9,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.FlightReservations;
-
 import model.Itinerary;
 
 public class FlightReservationsDao {
@@ -25,20 +23,36 @@ public class FlightReservationsDao {
 		List<FlightReservations> reservations = new ArrayList<FlightReservations>();
 			
 		/*Sample data begins*/
-		for (int i = 0; i < 4; i++) {
-			FlightReservations reservation = new FlightReservations();
-			
-			reservation.setResrNo(111);
-			reservation.setResrDate("2011-01-01");
-			reservation.setTotalFare(150.22); 
-			reservation.setBookingFee(10.12);
-			reservation.setRepSSN("198498472");
-			reservation.setFirstName("John");
-			reservation.setLastName("Wick");
-
-			reservations.add(reservation);
-				
-		}
+		try {
+			Class.forName("com.mysql.jdbc.Driver" );
+			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/demo","root","root");
+			Statement st = con.createStatement();
+			ResultSet rs = st.executeQuery("");
+			if (airlineID != null) {
+				rs = st.executeQuery("select * from FlightReservations F, Itinerary I where I.FlightNo =" + FlightNum + "and I.AirlineID = " + airlineID 
+					+ "and F.ResrNo = I.ResrNo");
+			}
+			else {
+				rs = st.executeQuery("select * from FlightReservations F, Itinerary I where I.FlightNo =" + FlightNum + "and F.FirstName" + " " + "F.LastName = " + CustomerName 
+						+ "and F.ResrNo = I.ResrNo");
+			}
+			while(rs.next()) {
+				FlightReservations flightres = new FlightReservations();
+				flightres.setAccountNo(rs.getInt("AccountNo"));
+				flightres.setResrDate(rs.getString("ResrDate"));
+				flightres.setBookingFee(rs.getDouble("BookingFee"));
+				flightres.setFirstName(rs.getString("FirstName"));
+				flightres.setLastName(rs.getString("LastName"));
+				flightres.setPassengerID(rs.getInt("PassengerID"));
+				flightres.setRepSSN(rs.getString("RepSSN"));
+				flightres.setResrNo(rs.getInt("ResrNo"));
+				flightres.setRevenue(rs.getDouble("Revenue"));
+				flightres.setTotalFare(rs.getDouble("TotalFare"));
+				reservations.add(flightres);
+			}
+		} catch(Exception e) {
+			System.out.println(e);
+		}	
 		/*Sample data ends*/
 						
 		return reservations;
@@ -55,6 +69,8 @@ public class FlightReservationsDao {
 		 */
 		
 		List<FlightReservations> reservations = new ArrayList<FlightReservations>();
+			
+		/*Sample data begins*/
 		try {
 			Class.forName("com.mysql.jdbc.Driver" );
 			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/demo","root","root");
@@ -74,9 +90,8 @@ public class FlightReservationsDao {
 			}
 			while(rs.next()) {
 				FlightReservations flightres = new FlightReservations();
-				flightres.setFirstName(rs.getString("FirstName"));
-				flightres.setLastName(rs.getString("LastName"));
-				flightres.setPassengerID(rs.getInt("PassengerID"));
+				flightres.setResrNo(rs.getInt("ResrNo"));
+				flightres.setRevenue(rs.getDouble("Revenue"));
 				reservations.add(flightres);
 			}
 		} catch(Exception e) {
