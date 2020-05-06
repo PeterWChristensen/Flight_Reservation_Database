@@ -147,8 +147,18 @@ public class CustomerDao {
 		 * username, which is the email address of the customer, who's ID has to be returned, is given as method parameter
 		 * The Customer's ID(accountNo) is required to be returned as a String
 		 */
+		int id = 0;
+		try {
+		Class.forName("com.mysql.jdbc.Driver");
+		Connection con = DriverManager.getConnection("jdbc:mysql://mysql4.cs.stonybrook.edu:3306/rzinoviev", "rzinoviev", "111595936");
+		Statement st = con.createStatement();
+		ResultSet rs = st.executeQuery("SELECT C.Id FROM Customer C WHERE C.Email='" + emailaddress + "'");
+		id = rs.getInt("Id");
+		} catch(Exception e) {
+			System.out.println(e);
+		}
 
-		return 111;
+		return id;
 	}
 
 
@@ -161,7 +171,30 @@ public class CustomerDao {
 		 * The sample code returns "success" by default.
 		 * You need to handle the database insertion of the customer details and return "success" or "failure" based on result of the database insertion.
 		 */
-		
+		try {
+		Class.forName("com.mysql.jdbc.Driver");
+		Connection con = DriverManager.getConnection("jdbc:mysql://mysql4.cs.stonybrook.edu:3306/rzinoviev", "rzinoviev", "111595936");
+		Statement st = con.createStatement();
+		ResultSet rs = st.executeQuery("SELECT MAX(Id) FROM Person");
+		Integer id = rs.getInt("Id") + 1;
+		st.executeQuery("INSERT INTO Person VALUES(" + id + ", " +
+				customer.getFirstName() + ", " +
+				customer.getLastName() + ", " +
+				customer.getAddress() + ", " +
+				customer.getCity() + ", " +
+				customer.getState() + ", " +
+				customer.getZipCode() + ", " + ")");
+		st.executeQuery("INSERT INTO Customer VALUES(" + id + ", " +
+				customer.getAccountNo() + ", " +
+				customer.getCreditCard() + ", " +
+				customer.getEmail() + ", " +
+				"CURRENT_TIMESTAMP, " +
+				customer.getRating() + ")");
+		} catch(Exception e) {
+			System.out.println(e);
+			return "failure";
+		}
+
 		/*Sample data begins*/
 		return "success";
 		/*Sample data ends*/
@@ -176,7 +209,17 @@ public class CustomerDao {
 		 * The sample code returns "success" by default.
 		 * You need to handle the database update and return "success" or "failure" based on result of the database update.
 		 */
-		
+		try {
+		Class.forName("com.mysql.jdbc.Driver");
+		Connection con = DriverManager.getConnection("jdbc:mysql://mysql4.cs.stonybrook.edu:3306/rzinoviev", "rzinoviev", "111595936");
+		Statement st = con.createStatement();
+		st.executeQuery("UPDATE Customer SET CreditCardNo=" + customer.getCreditCard() + ", " +
+				"Email=" + customer.getEmail() + ", " +
+				"Rating=" + customer.getRating() + ")");
+		} catch(Exception e) {
+			System.out.println(e);
+			return "failure";
+		}
 		/*Sample data begins*/
 		return "success";
 		/*Sample data ends*/
